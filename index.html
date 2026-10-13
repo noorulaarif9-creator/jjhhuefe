@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surpweb | Elite Miss You ✨</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --accent: #a855f7;
+            --soft-accent: #d8b4fe;
+            --gold: #ffcc00;
+            --dark-bg: #05020a;
+            --neon-glow: 0 0 30px rgba(168, 85, 247, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background: radial-gradient(circle at center, #0f071a 0%, #05020a 100%);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- Login Page --- */
+        #login-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(15, 7, 26, 0.9) 0%, #05020a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            padding: 50px 40px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            width: 85%;
+            max-width: 380px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            animation: boxFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes boxFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .login-box h2 {
+            font-family: 'Dancing Script';
+            font-size: 3rem;
+            margin-bottom: 30px;
+            background: linear-gradient(to bottom, #fff, var(--soft-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.3));
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .login-box input:focus {
+            border-bottom: 1px solid var(--accent);
+            box-shadow: 0 10px 10px -10px var(--accent);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.4);
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .toggle-password:hover {
+            color: var(--accent);
+        }
+
+        .login-box input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-elite {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 30px;
+            border: none;
+            background: linear-gradient(45deg, #7c3aed, #a855f7, #7c3aed);
+            background-size: 200% auto;
+            color: white;
+            font-weight: 900;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-elite:hover {
+            background-position: right center;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.6);
+            letter-spacing: 4px;
+        }
+
+        #login-error {
+            color: #ff4b4b;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            font-weight: 600;
+            display: none;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        #countdown-wrap {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            background: var(--dark-bg);
+        }
+
+        .num {
+            font-size: 18rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: var(--neon-glow);
+            position: absolute;
+            animation: cinematicPulse 1s ease-out forwards;
+        }
+
+        @keyframes cinematicPulse {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+                filter: blur(20px);
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+                filter: blur(0px);
+            }
+
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        #main-stage {
+            position: relative;
+            z-index: 100;
+            display: none;
+            text-align: center;
+            opacity: 0;
+            perspective: 2000px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            padding: 60px 40px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            max-width: 500px;
+            width: 90%;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease-out;
+        }
+
+        .bday-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #fff, var(--soft-accent), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+            filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5));
+            transform: translateZ(50px);
+        }
+
+        .btn-luxury {
+            margin-top: 30px;
+            padding: 18px 45px;
+            background: linear-gradient(45deg, #6d28d9, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 15px 35px rgba(109, 40, 217, 0.4);
+            transform: translateZ(30px);
+        }
+
+        .btn-luxury:hover {
+            transform: translateZ(60px) translateY(-8px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(168, 85, 247, 0.7);
+        }
+
+        #gallery-stage {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            background: rgba(5, 2, 10, 0.95);
+            text-align: center;
+        }
+
+        #pop-instruction {
+            font-family: 'Dancing Script';
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.5s;
+            width: 100%;
+        }
+
+        .balloon-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 30px;
+            max-width: 600px;
+            width: 100%;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .balloon:nth-child(1) {
+            grid-column: 1 / span 2;
+        }
+
+        .balloon:nth-child(2) {
+            grid-column: 3 / span 2;
+        }
+
+        .balloon:nth-child(3) {
+            grid-column: 5 / span 2;
+        }
+
+        .balloon:nth-child(4) {
+            grid-column: 2 / span 2;
+            grid-row: 2;
+        }
+
+        .balloon:nth-child(5) {
+            grid-column: 4 / span 2;
+            grid-row: 2;
+        }
+
+        .balloon {
+            width: 85px;
+            height: 105px;
+            border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+            position: relative;
+            cursor: pointer;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 20%, transparent 50%),
+                radial-gradient(circle at 50% 50%, var(--balloon-color, #7c3aed) 0%, #000 150%);
+            box-shadow: inset -5px -10px 20px rgba(0, 0, 0, 0.3), 0 15px 25px rgba(0, 0, 0, 0.4);
+            animation: floatSway 4s ease-in-out infinite alternate;
+            transition: transform 0.2s, visibility 0.2s;
+        }
+
+        .balloon::before {
+            content: "";
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 12px solid var(--balloon-color, #7c3aed);
+            filter: brightness(0.8);
+        }
+
+        @keyframes floatSway {
+            0% {
+                transform: translateY(0) rotate(-3deg);
+            }
+
+            100% {
+                transform: translateY(-20px) translateX(5px) rotate(3deg);
+            }
+        }
+
+        #mega-container {
+            position: relative;
+            margin-top: 50px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 600;
+        }
+
+        .mega-balloon {
+            width: 150px;
+            height: 180px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.2) 20%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #fff 0%, var(--accent) 120%);
+            border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+            cursor: pointer;
+            box-shadow: 0 0 60px rgba(168, 85, 247, 0.4), inset -10px -15px 30px rgba(0, 0, 0, 0.3);
+            animation: floatSway 3s ease-in-out infinite alternate;
+        }
+
+        #special-polaroid-stage {
+            position: fixed;
+            inset: 0;
+            z-index: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(5, 2, 10, 0.98);
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .special-polaroid {
+            background: white;
+            padding: 20px;
+            padding-bottom: 30px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            transform: scale(0.5) rotate(-5deg);
+            transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-align: center;
+        }
+
+        .special-polaroid img {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            height: auto;
+            max-height: 70vh;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .special-pol-cap {
+            font-family: 'Dancing Script', cursive;
+            color: #222;
+            font-size: 2rem;
+            margin-top: 15px;
+        }
+
+        #letter-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .letter-paper {
+            width: 85%;
+            max-width: 500px;
+            background: #fffaf0;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: translateY(100vh);
+            transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #333;
+            line-height: 1.6;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .letter-paper.open {
+            transform: translateY(0);
+        }
+
+        #typewriter-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            min-height: 250px;
+            white-space: pre-wrap;
+            color: #2c3e50;
+        }
+
+        .letter-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--accent);
+            z-index: 100;
+        }
+
+        #love-letter-btn {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            z-index: 1500;
+            display: none;
+            transition: 0.5s;
+            opacity: 0;
+        }
+
+        #love-letter-btn.show {
+            display: block;
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        #photo-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 6000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .polaroid-frame {
+            background: white;
+            padding: 15px;
+            padding-bottom: 60px;
+            width: 280px;
+            max-width: 80vw;
+            transform: rotate(-3deg) scale(0.8);
+            transition: 0.5s;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 1);
+        }
+
+        #photo-overlay.active .polaroid-frame {
+            transform: rotate(0deg) scale(1);
+        }
+
+        .polaroid-frame img {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            height: auto;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media screen and (max-width: 480px) {
+            .login-box {
+                padding: 40px 25px;
+                border-radius: 30px;
+            }
+
+            .login-box h2 {
+                font-size: 2.2rem;
+            }
+
+            .num {
+                font-size: 10rem;
+            }
+
+            .bday-text {
+                font-size: 2.2rem;
+            }
+
+            .glass-card {
+                padding: 40px 20px;
+                border-radius: 30px;
+            }
+
+            .balloon-grid {
+                gap: 15px;
+                max-width: 320px;
+                padding: 0 10px;
+            }
+
+            .balloon {
+                width: 70px;
+                height: 90px;
+            }
+
+            .mega-balloon {
+                width: 120px;
+                height: 150px;
+            }
+
+            .special-polaroid {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .special-pol-cap {
+                font-size: 1.5rem;
+            }
+
+            .letter-paper {
+                padding: 25px;
+                width: 90%;
+            }
+
+            #typewriter-text {
+                font-size: 1.1rem;
+                min-height: 200px;
+            }
+
+            .polaroid-frame {
+                width: 220px;
+            }
+
+            .btn-luxury {
+                padding: 15px 30px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Miss you chlww 💜</h2>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Your Name" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="The Code">
+                <i class="fa-solid fa-eye toggle-password" id="togglePass" onclick="togglePasswordVisibility()"></i>
+            </div>
+            <button class="btn-elite" onclick="checkLogin()">UNLOCK MEMORIES</button>
+            <p id="login-error">WRONG CODE ! ❌</p>
+        </div>
+    </div>
+
+    <canvas id="bg-canvas"></canvas>
+    <div id="countdown-wrap"></div>
+
+    <!-- Background song: put your song file at assets/song.mp3 -->
+    <audio id="bg-music" src="assets/bgm-1.mp3" loop preload="auto"></audio>
+    <button id="music-toggle" onclick="toggleMusic()"
+        style="position: fixed; top: 18px; right: 18px; z-index: 4000; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); color: white; font-size: 1.1rem; cursor: pointer; display: none; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-music" id="music-icon"></i>
+    </button>
+
+    <div id="main-stage">
+        <div class="glass-card" id="tilt-card">
+            <p style="font-family: 'Dancing Script'; font-size: 1.4rem; color: var(--soft-accent); margin-bottom: 0;">
+                "நீ என் வாழ்க்கையில் கிடைத்த உறவு மட்டுமல்ல"
+            </p>
+            <p style="font-family: 'Dancing Script'; font-size: 1.4rem; color: var(--soft-accent); margin-top: 5px;">
+               என் மனசுக்கு கிடைத்த அழகான வரம் மாமா! 🫂💜
+            </p>
+
+            <h1 class="bday-text">Miss you Chlww, your memories are priceless to me ✨💔 </h1>
+            <p style="opacity: 0.6; margin-top: 20px; letter-spacing: 2px; font-size: 0.8rem;"> 
+            </p>
+            <button class="btn-luxury" onclick="showBalloons()">Enter Our World ✨</button>
+        </div>
+    </div>
+
+
+    <div id="gallery-stage">
+        <h2 id="pop-instruction">Pop for a feeling! 🎈</h2>
+        <div class="balloon-grid" id="balloon-box"></div>
+        <div id="mega-container">
+            <div class="mega-balloon" onclick="popMega(this)"></div>
+        </div>
+    </div>
+
+    <div id="special-polaroid-stage">
+        <div class="special-polaroid" id="special-pol-card">
+            <img id="special-img" src="" alt="Special Memory">
+            <div class="special-pol-cap">Sujii forever 🤎</div>
+        </div>
+    </div>
+
+    <div id="letter-overlay">
+        <div class="letter-paper" id="letter-paper">
+            <span class="letter-close" onclick="closeLetter()">×</span>
+            <button id="skip-btn" onclick="skipAnimation()"
+                style="position: sticky; top: 0; float: right; background: #a855f7; color: white; border: none; padding: 5px 12px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; z-index: 101; font-family: 'Montserrat';">SKIP
+                ✨</button>
+
+            <div id="typewriter-text"></div>
+            <div style="text-align: right; margin-top: 20px; font-family: 'Dancing Script'; font-size: 1.4rem;">
+                Always thinking of you, <br> Yours Forever
+                 🤎
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-luxury" id="love-letter-btn" onclick="openLoveLetter()">Read My Heart 💌</button>
+
+    <div id="photo-overlay" onclick="this.classList.remove('active'); setTimeout(()=>this.style.display='none', 500)">
+        <div class="polaroid-frame">
+            <img id="popup-img" src="" alt="">
+            <div id="popup-text"
+                style="color: #222; text-align: center; font-family: 'Dancing Script'; font-size: 1.5rem; margin-top: 10px;">
+                Miss you chlww 💜</div>
+        </div>
+    </div>
+
+    <script>
+        const SPECIAL_IMAGE_URL = "assets/img-6.jpg"; // Replace with your special image URL
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('togglePass');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function checkLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const error = document.getElementById('login-error');
+
+            if (user === "ranju" && pass === "0110") {
+                document.getElementById('login-overlay').style.opacity = '0';
+                document.getElementById('login-overlay').style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('countdown-wrap').style.display = 'flex';
+                    runTimer();
+                }, 800);
+                const music = document.getElementById('bg-music');
+                music.volume = 0.6;
+                music.play().catch(() => { /* autoplay blocked, user can tap the music icon */ });
+                document.getElementById('music-toggle').style.display = 'flex';
+            } else {
+                error.style.display = 'block';
+                setTimeout(() => { error.style.display = 'none'; }, 2000);
+            }
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bg-music');
+            const icon = document.getElementById('music-icon');
+            if (music.paused) {
+                music.play().catch(() => { });
+                icon.classList.remove('fa-music-slash');
+                icon.classList.add('fa-music');
+            } else {
+                music.pause();
+                icon.classList.remove('fa-music');
+                icon.classList.add('fa-music-slash');
+            }
+        }
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const emojis = ['🤎', '☁️', '✨', '🤎', '🕊️'];
+        let particles = [];
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 50;
+                this.text = emojis[Math.floor(Math.random() * emojis.length)];
+                this.size = Math.random() * 20 + 15;
+                this.speed = Math.random() * 1.5 + 0.5;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.swing = Math.random() * 2;
+            }
+            update() {
+                this.y -= this.speed;
+                this.x += Math.sin(this.y / 50) * this.swing;
+                if (this.y < -50) this.reset();
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                ctx.fillStyle = "white";
+                ctx.fillText(this.text, this.x, this.y);
+            }
+        }
+
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        const card = document.getElementById('tilt-card');
+        window.addEventListener('mousemove', (e) => {
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        const countdown = ['3', '2', '1', '🤎'];
+        let idx = 0;
+        function runTimer() {
+            if (idx < countdown.length) {
+                document.getElementById('countdown-wrap').innerHTML = `<div class="num">${countdown[idx]}</div>`;
+                idx++;
+                setTimeout(runTimer, 1000);
+            } else {
+                document.getElementById('countdown-wrap').style.display = 'none';
+                const main = document.getElementById('main-stage');
+                main.style.display = 'block';
+                setTimeout(() => main.style.opacity = '1', 50);
+            }
+        }
+
+        // UPDATED: Added assets path to images
+        const balloonImages = ["assets/img-1.jpg", "assets/img-2.jpg", "assets/img-3.jpg", "assets/img-4.jpg", "assets/img-5.jpg"];
+        const colors = ['#7c3aed', '#a855f7', '#d8b4fe', '#6366f1', '#4f46e5'];
+        const quotes = ["Miss you chlww 🤎 ", "Lots of love ✨", "I love you ☺️ ", "Miss you 🕊️", "My heart is with you. 💜"];
+        let balloonsPopped = 0;
+
+        function showBalloons() {
+            document.getElementById('main-stage').style.display = 'none';
+            const gallery = document.getElementById('gallery-stage');
+            gallery.style.display = 'flex';
+            setTimeout(() => gallery.style.opacity = '1', 50);
+            const box = document.getElementById('balloon-box');
+            box.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const b = document.createElement('div');
+                b.className = 'balloon';
+                b.style.setProperty('--balloon-color', colors[i]);
+                b.onclick = () => { b.style.transform = "scale(1.2)"; setTimeout(() => pop(i, b), 100); };
+                box.appendChild(b);
+            }
+            document.getElementById('pop-instruction').style.visibility = 'visible';
+            document.getElementById('pop-instruction').style.opacity = '1';
+        }
+
+        function pop(i, el) {
+            el.style.visibility = 'hidden';
+            el.style.pointerEvents = 'none';
+            balloonsPopped++;
+            // This function handles the image popup
+            showPopup(balloonImages[i], quotes[i]);
+            if (balloonsPopped === 5) {
+                document.getElementById('pop-instruction').innerText = "One last wish... ✨";
+                const megaCont = document.getElementById('mega-container');
+                megaCont.style.display = 'flex';
+                setTimeout(() => { megaCont.style.opacity = '1'; }, 50);
+            }
+        }
+
+        function popMega(el) {
+            el.style.visibility = 'hidden';
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#FFD700', '#ffffff', '#a855f7'] });
+            setTimeout(() => {
+                document.getElementById('gallery-stage').style.display = 'none';
+                const specialStage = document.getElementById('special-polaroid-stage');
+                const specialCard = document.getElementById('special-pol-card');
+                document.getElementById('special-img').src = SPECIAL_IMAGE_URL;
+                specialStage.style.display = 'flex';
+                setTimeout(() => {
+                    specialStage.style.opacity = '1';
+                    specialCard.style.transform = 'scale(1) rotate(0deg)';
+                }, 50);
+                setTimeout(() => {
+                    document.getElementById('love-letter-btn').classList.add('show');
+                }, 2000);
+            }, 500);
+        }
+
+        // --- Letter Message & Logic ---
+        const letterMessage = `Miss You So Much, Mama… 🥺🫂💜\n
+
+Mama, I miss you so much. 🥺💜 Sometimes, I don't even know how to explain my feelings in words, but today I just want to express everything that is there in my heart. There are so many things I want to tell you, so many feelings I want you to understand, and so many little moments with you that I will always keep close to my heart. 🫂🥹💜
+
+Mama, you are not just a person in my life. You are someone who makes me feel happy, safe, comfortable, and cared for. Whenever I spend time with you, I feel a different kind of happiness that I cannot explain properly. Even our little conversations mean so much to me. Sometimes, it's not about doing something special or going somewhere beautiful. Just talking to you, spending a little time with you, and seeing you happy are enough to make my day better. 🥹💜
+
+I don't know whether you realise how much your presence means to me, Mama. Sometimes, even a small conversation with you can make me smile for a long time. The little moments we share may seem ordinary to you, but for me, they become beautiful memories that I keep thinking about. 🫂💜
+
+Thank you for always showing me love, care, and support. Thank you for being someone I can feel comfortable with, someone whose presence makes me happy, and someone who brings a smile to my face without even trying. I may not express everything perfectly, but please know that I truly appreciate every little thing you do for me. 🥺💜
+
+Mama, whenever I hear that you are not feeling well, I automatically start worrying about you. I don't know why, but I really want you to be healthy and happy all the time. I wish I could always see you smiling, hear you talking happily, and know that you are doing well. Your health and happiness matter so much to me. Please take good care of yourself, Mama. Don't forget to rest properly and look after your health. 🥺🫂💜
+
+Sometimes, I wish I could go back to those moments when we spent time together and talked happily. I wish I could experience those little moments again and again. It's funny how some simple memories can mean so much to our hearts. Whenever I think about the time we spent together, I automatically smile, but at the same time, I feel that little sadness because I miss those moments. 🥹🤍💜
+
+Mama, I may not tell you every day how much I care about you, but that doesn't mean my care is any less. Even when we don't talk, I still hope you are doing well. Even when you are busy with your own life, I still wish you happiness. And even when I cannot be there with you, I always want good things to happen in your life. You deserve so much happiness, peace, love, and success. 🫂💜
+
+I always pray to God that you should stay healthy and happy forever. May God protect you from every difficulty, give you strength during hard times, help you achieve all your dreams, and fill your life with beautiful memories. I hope you always have reasons to smile, people who genuinely care about you, and peace in your heart. Whatever you wish for in life, I truly hope you get it, Mama. 🥺🙏🏻💜
+
+And Mama, please never think that you are an ordinary person to me. You have your own special place in my heart because of the love, care, and happiness you have given me. I am really happy and lucky to have you in my life. I might not always find the right words to explain it, but I hope you can understand my feelings through the little things I say and do. 💜🫂
+
+No matter how busy life gets, I hope we will always have beautiful moments to remember, happy conversations to smile about, and a bond filled with love, care, and understanding. I hope you always stay the same happy, caring Mama who makes me smile. And whenever life feels difficult for you, I hope you remember that there are people who genuinely wish to see you happy and successful. 🥹💜
+
+Sometimes, I really miss you more than I can explain. I miss those conversations, those happy moments, and that comfortable feeling I get when I am around you. I wish time would slow down a little during our happiest moments so that I could enjoy them longer. Maybe these things sound small, but they mean a lot to me, Mama. 🥺🫂💜
+
+I don't know what the future holds, but one thing I know is that I will always wish the best for you. I want to see you achieve your dreams, become successful, stay healthy, and live a peaceful and happy life. I want to see you smiling without worries and enjoying every beautiful thing life has to offer. Your happiness will always be something I sincerely pray for. 💜✨
+
+Thank you for being my caring Mama, for making me feel special in your own way, and for giving me memories that bring a smile to my face. I hope you know how much you are appreciated and how genuinely I wish for your happiness. Please always take care of yourself, Mama, because your health and happiness are important to me. 🥺💜
+
+I miss you so much, Mama. 🥹🫂💜 I miss talking to you, spending time with you, laughing with you, and creating those little memories that mean so much to me. I wish I could tell you all these things in person, but until then, I am putting my feelings into these words.
+
+Love you so much, Mama. 💜🫂 Please stay healthy, stay happy, keep smiling, and never stop believing in yourself. May God always bless you with happiness, peace, success, and everything your heart wishes for.
+
+\nYou will always be someone very special to me, Mama. Missing you more than words can say. 🥺🫂💜✨`;
+
+        let typingTimer;
+
+        function openLoveLetter() {
+            const overlay = document.getElementById('letter-overlay');
+            const paper = document.getElementById('letter-paper');
+            const textEl = document.getElementById('typewriter-text');
+            const skipBtn = document.getElementById('skip-btn');
+
+            if (skipBtn) skipBtn.style.display = 'block';
+            overlay.style.display = 'flex';
+            textEl.innerHTML = "";
+            setTimeout(() => {
+                paper.classList.add('open');
+                typeWriter(letterMessage, 0, textEl);
+            }, 50);
+        }
+
+        function typeWriter(text, i, element) {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                const paper = document.getElementById('letter-paper');
+                paper.scrollTop = paper.scrollHeight;
+                typingTimer = setTimeout(() => typeWriter(text, i + 1, element), 40);
+            } else {
+                const skipBtn = document.getElementById('skip-btn');
+                if (skipBtn) skipBtn.style.display = 'none';
+            }
+        }
+
+        function skipAnimation() {
+            clearTimeout(typingTimer);
+            const textEl = document.getElementById('typewriter-text');
+            textEl.innerHTML = letterMessage;
+            document.getElementById('skip-btn').style.display = 'none';
+            const paper = document.getElementById('letter-paper');
+            paper.scrollTop = paper.scrollHeight;
+        }
+
+        function closeLetter() {
+            document.getElementById('letter-paper').classList.remove('open');
+            setTimeout(() => document.getElementById('letter-overlay').style.display = 'none', 800);
+        }
+
+        function showPopup(img, text) {
+            const overlay = document.getElementById('photo-overlay');
+            // UPDATED: Correctly setting image source from the balloonImages array
+            document.getElementById('popup-img').src = img;
+            document.getElementById('popup-text').innerText = text;
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('active'), 50);
+        }
+    </script>
+</body>
+
+</html>
